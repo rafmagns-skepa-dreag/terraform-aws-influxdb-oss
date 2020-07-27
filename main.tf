@@ -52,8 +52,8 @@ data "aws_ami" "amzn2" {
 }
 
 locals {
-  is_admin_password_systems_manager = length(regexall("^parameter/.*", var.admin_password)) > 0
-  is_admin_password_secrets_manager = length(regexall("^secrets/.*", var.admin_password)) > 0
+  is_admin_password_systems_manager = var.admin_password_type == "parameter"
+  is_admin_password_secrets_manager = var.admin_password_type == "secret"
   is_hosted_zone_provided           = length(var.hosted_zone_id) > 0
   is_image_id_provided              = length(var.image_id) > 0
   instance_type_support_recovery = contains(
@@ -63,6 +63,7 @@ locals {
   prefix           = length(trimspace(var.prefix)) > 0 ? format("%s-", trimspace(var.prefix)) : ""
   storage_ebs_flag = var.storage_type == "ebs" ? 1 : 0
 }
+
 
 #################
 # Security Groups
@@ -225,7 +226,7 @@ data "aws_iam_policy_document" "secrets-manager" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:secretsmanager:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:${var.admin_password}"
+      "arn:aws:secretsmanager:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:secret:${var.admin_password}"
     ]
   }
 }

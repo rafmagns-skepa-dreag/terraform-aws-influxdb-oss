@@ -13,6 +13,21 @@ variable "admin_password" {
   DOC
 }
 
+variable "admin_password_type" {
+  default     = "plaintext"
+  type        = string
+  description = "Where the password is stored. Allowed values are plaintext, secret, and parameter"
+}
+
+variable "admin_password_arn" {
+  default     = ""
+  type        = string
+  description = <<DOC
+  The arn of a SSM Parameter Store parameter or Secrets Manager secret for the password of the aministrator user of the manager tools.
+  Support also clear text value for ease of development.
+  DOC
+}
+
 variable "ebs_kms_key_id" {
   default     = "alias/aws/ebs"
   description = "The ID of the KMS key to be used for encrypting EBS volumes."
@@ -29,7 +44,7 @@ variable "ec2_cpu_credits" {
 }
 
 variable "ec2_user_data" {
-  default = ""
+  default     = ""
   description = <<DOC
   The data to pass to the EC2 instances at startup. If none provided (left blank) the default provisioning of InfluxDB will be used.
   NOTE: the default provisioning only supports Amazon Linux 2 type of AMI.
